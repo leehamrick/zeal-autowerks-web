@@ -1,0 +1,267 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>D-SERIES TUNER CALCULATOR • ZEAL AUTO WERKS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="crt min-h-screen pb-12">
+  <div class="max-w-6xl mx-auto px-4 py-6 md:p-6">
+
+    <!-- HEADER -->
+    <div class="panel rounded-none p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <div class="header text-4xl md:text-5xl font-black text-[#ffcc00] tracking-[6px]">ZEAL AUTO WERKS</div>
+        <div class="text-[#e40012] text-2xl md:text-3xl font-black tracking-widest mt-1">D-SERIES TUNER CALCULATOR</div>
+      </div>
+      <div class="text-right text-[#00ffcc] text-xs leading-tight font-bold">
+        HONDA • ACURA<br>
+        D15 • D16 • D17<br>
+        <span class="text-[#ffcc00]">1998-2005 EDITION</span>
+      </div>
+    </div>
+
+    <!-- PRESETS -->
+    <div class="mb-8">
+      <div class="label mb-4 flex items-center justify-between">
+        <span>SELECT YOUR BUILD • ONE TAP</span>
+        <span class="text-[#e40012] text-xs">90s TUNER MODE</span>
+      </div>
+      <div id="preset-container" class="flex flex-wrap gap-3"></div>
+    </div>
+
+    <div class="grid lg:grid-cols-12 gap-8">
+      <!-- INPUTS -->
+      <div class="lg:col-span-7 space-y-8">
+
+        <!-- Block  -->
+        <div class="panel rounded-none p-6">
+          <div class="label">BLOCK</div>
+          <select id="block" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
+            <option value="">SELECT BLOCK</option>
+            <option value="D16-D17">D16 - D17</option>
+            <option value="D15">D15</option>
+            <option value="Other">OTHER</option>
+          </select>
+		  <div class="mt-6">
+			  <div class="label">BORE (mm)</div>
+			  <div class="custom-number mt-3">
+				<button onclick="decrement('bore', 0.1)" class="retro-button">-</button>
+				<div id="bore-display" class="value">75</div>
+				<button onclick="increment('bore', 0.1)" class="retro-button">+</button>
+			  </div>
+		  </div>
+		  <div class="mt-6">
+			  <div class="label">DECK HEIGHT (mm)</div>
+			  <div class="custom-number mt-3">
+				<button onclick="decrement('deckHeight', 0.1)" class="retro-button">-</button>
+				<div id="deckHeight-display" class="value">212</div>
+				<button onclick="increment('deckHeight', 0.1)" class="retro-button">+</button>
+			  </div>
+		  </div>
+        </div>
+
+        <!-- Crank + Stroke in own box -->
+        <div class="panel rounded-none p-6">
+          <div class="label">CRANK</div>
+          <select id="crank" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
+            <option value="">SELECT CRANK</option>
+            <option value="D16">D16</option>
+            <option value="D17">D17</option>
+            <option value="D15">D15</option>
+            <option value="Other">OTHER</option>
+          </select>
+		  <div class="mt-6">
+            <div class="label">STROKE (mm)</div>
+            <div class="custom-number mt-3">
+              <button onclick="decrement('stroke', 0.1)" class="retro-button">-</button>
+              <div id="stroke-display" class="value">84.5</div>
+              <button onclick="increment('stroke', 0.1)" class="retro-button">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cylinders in own box -->
+        <div class="panel rounded-none p-6" style="display:none;">
+          <div class="label">CYLINDERS</div>
+          <div class="custom-number mt-3">
+            <button onclick="decrement('cylinders', 1)" class="retro-button">-</button>
+            <div id="cylinders-display" class="value">4</div>
+            <button onclick="increment('cylinders', 1)" class="retro-button">+</button>
+          </div>
+        </div>
+
+        <!-- Head -->
+        <div class="panel rounded-none p-6">
+          <div class="label">HEAD</div>
+          <select id="head" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
+            <option value="">SELECT HEAD</option>
+            <option value="D15B7-D16A6">D15B7 - D16A6</option>
+            <option value="D16Z6-Y7">D16Z6/Y7 - D15B</option>
+            <option value="D16Y8">D16Y8</option>
+            <option value="ZC">ZC</option>
+            <option value="D17A2">D17A2</option>
+            <option value="D15Z1">D15Z1</option>
+            <option value="D16A3">D16A3 (Australia)</option>
+            <option value="Other">OTHER</option>
+          </select>
+          <div class="mt-6">
+            <div class="label">CHAMBER VOL (cc)</div>
+            <div class="custom-number mt-3">
+              <button onclick="decrement('chamber', 0.1)" class="retro-button">-</button>
+              <div id="chamber-display" class="value">42.5</div>
+              <button onclick="increment('chamber', 0.1)" class="retro-button">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Piston -->
+        <div class="panel rounded-none p-6">
+          <div class="label">PISTON</div>
+          <select id="piston" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
+            <option value="">SELECT PISTON</option>
+            <option value="PM3">PM3 (US D15B7)</option>
+            <option value="P07-010">P07-010 (US D15Z1)</option>
+            <option value="PM6">PM6 (US D16A6)</option>
+            <option value="P2E-000">P2E-000 (US D16Y7)</option>
+            <option value="P28-A01">P28-A01 (US D16Z6)</option>
+            <option value="P2M-00">P2M-00 (US D16Y5)</option>
+            <option value="P2P">P2P (US D16Y8)</option>
+            <option value="PDN-A00">PDN-A00 (US 98-00 GX)</option>
+            <option value="P29">P29/PM7 (ZC)</option>
+            <option value="PMS-A00">PMS-A00 (US 01-03 GX)</option>
+            <option value="PG6">PG6 (US 86-87 D16A1)</option>
+            <option value="PLR-A0">PLR-A0 (US D17A2)</option>
+            <option value="P08-010">P08-010 (JDM 91-99 VTi)</option>
+            <option value="Vitara">Vitara</option>
+            <option value="Other">OTHER</option>
+          </select>
+          <div class="grid grid-cols-2 gap-6 mt-6">
+            <div>
+              <div class="label">DOME/DISH (cc)</div>
+              <div class="custom-number mt-3">
+                <button onclick="decrement('dome', 0.1)" class="retro-button">-</button>
+                <div id="dome-display" class="value">-9.5</div>
+                <button onclick="increment('dome', 0.1)" class="retro-button">+</button>
+              </div>
+            </div>
+            <div>
+              <div class="label">COMP HEIGHT (mm)</div>
+              <div class="custom-number mt-3">
+                <button onclick="decrement('compHeight', 0.1)" class="retro-button">-</button>
+                <div id="compHeight-display" class="value">30.5</div>
+                <button onclick="increment('compHeight', 0.1)" class="retro-button">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connecting Rod -->
+        <div class="panel rounded-none p-6">
+          <div class="label">CONNECTING ROD</div>
+          <select id="rod" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
+            <option value="">SELECT ROD</option>
+            <option value="D16-D17">D16 - D17 - D15Z1/B</option>
+            <option value="D15B">D15B1/B2/B8/B7</option>
+            <option value="Other">OTHER</option>
+          </select>
+          <div class="mt-6">
+            <div class="label">ROD LENGTH (mm)</div>
+            <div class="custom-number mt-3">
+              <button onclick="decrement('rodLength', 0.1)" class="retro-button">-</button>
+              <div id="rodLength-display" class="value">137</div>
+              <button onclick="increment('rodLength', 0.1)" class="retro-button">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Head Gasket - separate lines -->
+        <div class="panel rounded-none p-6">
+          <div class="label">HEAD GASKET</div>
+          <select id="gasket" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
+            <option value="">SELECT GASKET</option>
+            <option value="D15B7-D16A6">D15B7 - D16A6</option>
+            <option value="D16Y8-D16Z6">D16Y8 - D16Z6</option>
+            <option value="D16Y8-2layer">D16Y8 2-layer</option>
+            <option value="D17A2">D17A2</option>
+            <option value="Other">OTHER</option>
+          </select>
+          <div class="mt-6 grid grid-cols-2 gap-6">
+            <div>
+              <div class="label">THICKNESS (in)</div>
+              <div class="custom-number mt-3">
+                <button onclick="decrement('gasketThick', 0.001)" class="retro-button">-</button>
+                <div id="gasketThick-display" class="value">0.027</div>
+                <button onclick="increment('gasketThick', 0.001)" class="retro-button">+</button>
+              </div>
+            </div>
+            <div>
+              <div class="label">BORE DIFF (mm)</div>
+              <div class="custom-number mt-3">
+                <button onclick="decrement('gasketBoreDiff', 0.1)" class="retro-button">-</button>
+                <div id="gasketBoreDiff-display" class="value">1</div>
+                <button onclick="increment('gasketBoreDiff', 0.1)" class="retro-button">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Tuning -->
+        <div class="panel rounded-none p-6">
+          <div class="label mb-4">ADVANCED TUNING</div>
+          <div class="grid grid-cols-2 gap-6">
+            <!-- First row -->
+            <div>
+              <div class="label">MILLING (in)</div>
+              <div class="custom-number mt-3">
+                <button onclick="decrement('milling', 0.001)" class="retro-button">-</button>
+                <div id="milling-display" class="value">0</div>
+                <button onclick="increment('milling', 0.001)" class="retro-button">+</button>
+              </div>
+            </div>
+            <div>
+              <div class="label">MAX RPM</div>
+              <div class="custom-number mt-3">
+                <button onclick="decrement('rpm', 100)" class="retro-button">-</button>
+                <div id="rpm-display" class="value">7200</div>
+                <button onclick="increment('rpm', 100)" class="retro-button">+</button>
+              </div>
+            </div>
+            <!-- Second row -->
+            <div>
+              <div class="label">ELEVATION (ft)</div>
+              <div class="custom-number mt-3">
+                <button onclick="decrement('elevation', 500)" class="retro-button">-</button>
+                <div id="elevation-display" class="value">0</div>
+                <button onclick="increment('elevation', 500)" class="retro-button">+</button>
+              </div>
+            </div>
+            <div>
+              <div class="label">BOOST (psi)</div>
+              <div class="custom-number mt-3">
+                <button onclick="decrement('boost', 0.1)" class="retro-button">-</button>
+                <div id="boost-display" class="value">0</div>
+                <button onclick="increment('boost', 0.1)" class="retro-button">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="lg:col-span-5">
+        <div id="results" class="result-box rounded-none p-8 sticky top-6"></div>
+      </div>
+    </div>
+
+    <!-- LOADED POPUP -->
+    <div id="loaded-popup" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-black border-4 border-[#00ffcc] text-[#00ffcc] px-8 py-4 text-xl font-black tracking-widest shadow-2xl z-50">
+      BUILD LOADED!
+    </div>
+
+    <div class="text-center text-[#00ffcc] text-[10px] mt-12 tracking-widest">
+      ZEAL AUTO WERKS • 2002 • HONDA D-SERIES EDITION • REAL-TIME • MOBILE READY
+    </div>
+  </div>
+</body>
+</html>
