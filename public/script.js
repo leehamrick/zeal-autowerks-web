@@ -1,5 +1,7 @@
 let audioCtx;
 let longPressTimer;
+let longPressDelayTimer;
+let longPressRepeatTimer;
 
 function playBeep(freq = 440, duration = 80, type = 'square') {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -104,19 +106,25 @@ function decrement(id, step) {
 }
 
 function startLongPress(id, step, direction) {
-  if (longPressTimer) clearInterval(longPressTimer);
-  longPressTimer = setInterval(() => {
-    values[id] = parseFloat((values[id] + direction * step).toFixed(3));
-    updateDisplay(id);
-    calculate();
-    playBeep(880, 20, 'sine');
-  }, 60);   // adjust 60 if you want faster/slower
+  stopLongPress();
+  longPressDelayTimer = setTimeout(() => {
+    longPressRepeatTimer = setInterval(() => {
+      values[id] = parseFloat((values[id] + direction * step).toFixed(3));
+      updateDisplay(id);
+      calculate();
+      playBeep(880, 20, 'sine');
+    }, 60); // repeat speed (lower = faster)
+  }, 400); // initial delay (400ms feels natural and prevents accidental repeats)
 }
 
 function stopLongPress() {
-  if (longPressTimer) {
-    clearInterval(longPressTimer);
-    longPressTimer = null;
+  if (longPressDelayTimer) {
+    clearTimeout(longPressDelayTimer);
+    longPressDelayTimer = null;
+  }
+  if (longPressRepeatTimer) {
+    clearInterval(longPressRepeatTimer);
+    longPressRepeatTimer = null;
   }
 }
 
