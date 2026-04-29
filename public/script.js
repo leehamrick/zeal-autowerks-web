@@ -30,7 +30,7 @@ const presets = [
   {name:"Mini-Me D15+Y8", block:"D15", crank:"D15", head:"D16Y8", piston:"PM3", rod:"D15B", gasket:"D15B7-D16A6"},
   {name:"D16Z6 VTEC", block:"D16-D17", crank:"D16", head:"D16Z6-Y7", piston:"P28-A01", rod:"D16-D17", gasket:"D16Y8-D16Z6"},
   {name:"Vitara Turbo", block:"D16-D17", crank:"D16", head:"D16Z6-Y7", piston:"Vitara", rod:"D16-D17", gasket:"D16Y8-D16Z6"},
-  {name:"D17A2 Type-S", block:"D16-D17", crank:"D17", head:"D17A2", piston:"PLR-A0", rod:"D16-D17", gasket:"D17A2"}
+  {name:"D17A2", block:"D16-D17", crank:"D17", head:"D17A2", piston:"PLR-A0", rod:"D16-D17", gasket:"D17A2"}
 ];
 
 const values = {

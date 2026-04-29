@@ -39,48 +39,74 @@
         <!-- Block  -->
         <div class="panel rounded-none p-6">
           <div class="label">BLOCK</div>
-          <select id="block" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
+          <select id="block" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
             <option value="">SELECT BLOCK</option>
             <option value="D16-D17">D16 - D17</option>
             <option value="D15">D15</option>
             <option value="Other">OTHER</option>
           </select>
-		  <div class="mt-6">
-			  <div class="label">BORE (mm)</div>
-			  <div class="custom-number mt-3">
-				<button onclick="decrement('bore', 0.1)" class="retro-button">-</button>
-				<div id="bore-display" class="value">75</div>
-				<button onclick="increment('bore', 0.1)" class="retro-button">+</button>
-			  </div>
-		  </div>
-		  <div class="mt-6">
-			  <div class="label">DECK HEIGHT (mm)</div>
-			  <div class="custom-number mt-3">
-				<button onclick="decrement('deckHeight', 0.1)" class="retro-button">-</button>
-				<div id="deckHeight-display" class="value">212</div>
-				<button onclick="increment('deckHeight', 0.1)" class="retro-button">+</button>
-			  </div>
-		  </div>
-        </div>
-
-        <!-- Crank + Stroke in own box -->
-        <div class="panel rounded-none p-6">
-          <div class="label">CRANK</div>
-          <select id="crank" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
-            <option value="">SELECT CRANK</option>
-            <option value="D16">D16</option>
-            <option value="D17">D17</option>
-            <option value="D15">D15</option>
-            <option value="Other">OTHER</option>
-          </select>
-		  <div class="mt-6">
-            <div class="label">STROKE (mm)</div>
+        <div class="grid grid-cols-2 gap-6 mt-6">
+          <div>
+            <div class="label">BORE (mm)</div>
             <div class="custom-number mt-3">
-              <button onclick="decrement('stroke', 0.1)" class="retro-button">-</button>
-              <div id="stroke-display" class="value">84.5</div>
-              <button onclick="increment('stroke', 0.1)" class="retro-button">+</button>
+            <button onclick="decrement('bore', 0.1)" class="retro-button">-</button>
+            <div id="bore-display" class="value">75</div>
+            <button onclick="increment('bore', 0.1)" class="retro-button">+</button>
             </div>
           </div>
+          <div>
+            <div class="label">DECK HEIGHT (mm)</div>
+            <div class="custom-number mt-3">
+            <button onclick="decrement('deckHeight', 0.1)" class="retro-button">-</button>
+            <div id="deckHeight-display" class="value">212</div>
+            <button onclick="increment('deckHeight', 0.1)" class="retro-button">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <!-- Crank and Connecting Rod side by side, each their own panel -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Crank panel -->
+          <div class="panel rounded-none p-6">
+            <div class="label">CRANK</div>
+            <select id="crank" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
+              <option value="">SELECT CRANK</option>
+              <option value="D16">D16</option>
+              <option value="D17">D17</option>
+              <option value="D15">D15</option>
+              <option value="Other">OTHER</option>
+            </select>
+            <div class="mt-6">
+              <div class="label">STROKE (mm)</div>
+              <div class="custom-number mt-3">
+                <button onclick="decrement('stroke', 0.1)" class="retro-button">-</button>
+                <div id="stroke-display" class="value">84.5</div>
+                <button onclick="increment('stroke', 0.1)" class="retro-button">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Connecting Rod panel -->
+          <div class="panel rounded-none p-6">
+            <div class="label">CONNECTING ROD</div>
+            <select id="rod" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
+              <option value="">SELECT ROD</option>
+              <option value="D16-D17">D16/D17/D15Z1</option>
+              <option value="D15B">D15B1/B2/B8/B7</option>
+              <option value="Other">OTHER</option>
+            </select>
+            <div class="mt-6">
+              <div class="label">ROD LENGTH (mm)</div>
+              <div class="custom-number mt-3">
+                <button onclick="decrement('rodLength', 0.1)" class="retro-button">-</button>
+                <div id="rodLength-display" class="value">137</div>
+                <button onclick="increment('rodLength', 0.1)" class="retro-button">+</button>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- Cylinders in own box -->
@@ -96,7 +122,7 @@
         <!-- Head -->
         <div class="panel rounded-none p-6">
           <div class="label">HEAD</div>
-          <select id="head" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
+          <select id="head" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
             <option value="">SELECT HEAD</option>
             <option value="D15B7-D16A6">D15B7 - D16A6</option>
             <option value="D16Z6-Y7">D16Z6/Y7 - D15B</option>
@@ -120,7 +146,7 @@
         <!-- Piston -->
         <div class="panel rounded-none p-6">
           <div class="label">PISTON</div>
-          <select id="piston" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
+          <select id="piston" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
             <option value="">SELECT PISTON</option>
             <option value="PM3">PM3 (US D15B7)</option>
             <option value="P07-010">P07-010 (US D15Z1)</option>
@@ -158,29 +184,10 @@
           </div>
         </div>
 
-        <!-- Connecting Rod -->
-        <div class="panel rounded-none p-6">
-          <div class="label">CONNECTING ROD</div>
-          <select id="rod" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
-            <option value="">SELECT ROD</option>
-            <option value="D16-D17">D16 - D17 - D15Z1/B</option>
-            <option value="D15B">D15B1/B2/B8/B7</option>
-            <option value="Other">OTHER</option>
-          </select>
-          <div class="mt-6">
-            <div class="label">ROD LENGTH (mm)</div>
-            <div class="custom-number mt-3">
-              <button onclick="decrement('rodLength', 0.1)" class="retro-button">-</button>
-              <div id="rodLength-display" class="value">137</div>
-              <button onclick="increment('rodLength', 0.1)" class="retro-button">+</button>
-            </div>
-          </div>
-        </div>
-
         <!-- Head Gasket - separate lines -->
         <div class="panel rounded-none p-6">
           <div class="label">HEAD GASKET</div>
-          <select id="gasket" onchange="autoFill()" class="w-full mt-3 text-base md:text-lg">
+          <select id="gasket" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
             <option value="">SELECT GASKET</option>
             <option value="D15B7-D16A6">D15B7 - D16A6</option>
             <option value="D16Y8-D16Z6">D16Y8 - D16Z6</option>
