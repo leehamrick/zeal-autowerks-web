@@ -10,7 +10,7 @@ body {
 
 .crt::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: repeating-linear-gradient(
     transparent 0px,
@@ -47,6 +47,7 @@ body {
   color: #ffcc00;
   position: relative;
   overflow: hidden;
+  padding: 15px;
 }
 .retro-button:hover { transform: translateY(-2px); box-shadow: 10px 10px 0 #000000aa; }
 .retro-button:active, .retro-button.pressed {
