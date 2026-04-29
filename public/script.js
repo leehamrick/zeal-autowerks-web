@@ -237,12 +237,10 @@ window.onload = () => {
     if (!id) return;
 
     const start = (e) => {
-      e.preventDefault();
       startLongPress(id, step, isIncrement ? 1 : -1);
     };
 
     const stop = (e) => {
-      e.preventDefault();
       stopLongPress();
     };
 

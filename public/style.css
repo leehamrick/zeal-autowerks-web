@@ -127,7 +127,8 @@ select option {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  touch-action: none;
+  -webkit-touch-callout: none;     /* iOS Safari */
+  touch-action: manipulation;      /* Best for buttons on mobile */
   -webkit-tap-highlight-color: transparent;
 }
 
