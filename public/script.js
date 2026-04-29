@@ -114,7 +114,7 @@ function startLongPress(id, step, direction) {
       calculate();
       playBeep(880, 20, 'sine');
     }, 60); // repeat speed (lower = faster)
-  }, 400); // initial delay (400ms feels natural and prevents accidental repeats)
+  }, 350); // initial delay (350ms feels natural and prevents accidental repeats)
 }
 
 function stopLongPress() {
@@ -227,16 +227,27 @@ window.onload = () => {
   calculate();
 
   document.querySelectorAll('.custom-number button').forEach(btn => {
-    const id = btn.getAttribute('onclick').match(/'(.*?)'/)[1];
-    const step = parseFloat(btn.getAttribute('onclick').match(/, ([\d.]+)/)[1]);
-
+    const onclickStr = btn.getAttribute('onclick');
+    const idMatch = onclickStr.match(/'(.*?)'/);
+    const id = idMatch ? idMatch[1] : null;
+    const stepMatch = onclickStr.match(/, ([\d.]+)/);
+    const step = stepMatch ? parseFloat(stepMatch[1]) : 0.1;
     const isIncrement = btn.textContent.trim() === '+';
 
-    const start = () => startLongPress(id, step, isIncrement ? 1 : -1);
-    const stop = () => stopLongPress();
+    if (!id) return;
+
+    const start = (e) => {
+      e.preventDefault();
+      startLongPress(id, step, isIncrement ? 1 : -1);
+    };
+
+    const stop = (e) => {
+      e.preventDefault();
+      stopLongPress();
+    };
 
     btn.addEventListener('mousedown', start);
-    btn.addEventListener('touchstart', start);
+    btn.addEventListener('touchstart', start, { passive: false });
     btn.addEventListener('mouseup', stop);
     btn.addEventListener('mouseleave', stop);
     btn.addEventListener('touchend', stop);
