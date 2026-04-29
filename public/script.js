@@ -179,43 +179,33 @@ function calculate() {
   const rodLength      = values.rodLength;
   const gasketThick    = values.gasketThick;
   const gasketBoreDiff = values.gasketBoreDiff;
-  const milling        = values.milling;     // now used
+  const milling        = values.milling;
 
   const pi = 3.1415926535;
 
-  // Swept volume (total for 4 cylinders) in cc
   const sweptVolume = ((bore / 2) * (bore / 2)) * pi * stroke / 1000 * 4;
-
   const pistonDomeDisplacement = dome * 4;
-
-  // Real piston-to-deck height, now includes milling (in mm)
   const millingMm = milling * 25.4;
   const pistonToDeckHeight = deckHeight - rodLength - compHeight - (stroke / 2) - millingMm;
-
-  // Head gasket volume
   const headGasketVolume = 
     (((bore - (-gasketBoreDiff)) / 2) * ((bore - (-gasketBoreDiff)) / 2)) * 
     pi * 
     ((gasketThick * 25.4) - (-pistonToDeckHeight)) / 1000 * 4;
-
   const combustionChamberVolume = chamber * 4;
-
-  // Compression ratio
   const tdcVolume = sweptVolume - pistonDomeDisplacement + combustionChamberVolume + headGasketVolume;
   const bdcVolume = combustionChamberVolume + headGasketVolume - pistonDomeDisplacement;
-
   const staticCR = tdcVolume / bdcVolume;
 
-  // Extra values
   const rodRatio        = rodLength / stroke;
   const effectiveCR     = (staticCR * (1 + values.boost / 14.7)) - (values.elevation / 1000 * 0.2);
   const meanPistonSpeed = (stroke / 1000) * values.rpm * 2 / 60;
   const maxPistonAccel  = (pi * pi * stroke * values.rpm * values.rpm) / (90000 * 1000);
-
-  const totalDisplacement = sweptVolume;   // already in cc
+  const totalDisplacement = sweptVolume;
 
   const container = document.getElementById('results');
-  container.innerHTML = `
+  const newContainer = container.cloneNode(false);
+  
+  newContainer.innerHTML = `
     <div class="text-center mb-6">
       <div class="text-[#00ffcc] text-xs tracking-[4px]">STATIC COMPRESSION</div>
       <div class="text-6xl md:text-5xl font-black text-[#ffcc00] leading-none">${staticCR.toFixed(2)}:1</div>
@@ -229,6 +219,9 @@ function calculate() {
       <div class="flex justify-between"><span class="text-[#00ffcc]">MAX PISTON ACCEL</span><span class="font-black">${maxPistonAccel.toFixed(0)} m/s²</span></div>
     </div>
   `;
+
+  // By replacing the node, we force the browser to re-run the CSS animation.
+  container.parentNode.replaceChild(newContainer, container);
 }
 
 window.onload = () => {

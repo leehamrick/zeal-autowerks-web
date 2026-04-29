@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-   
+
 body {
   font-family: 'Press Start 2P', system-ui;
   background: linear-gradient(#0a1428, #001122);
@@ -76,18 +76,19 @@ body {
 }
 
 .result-box {
-  background: #001122;
+  background: #001a33;
   border: 8px solid #00ffcc;
-  box-shadow: 0 0 30px #00ffcc88, 0 0 60px #00ffcc44;
+  box-shadow: 0 0 40px #00ffcc, 0 0 80px #00ffcc66;
   animation: resultRefresh 0.6s ease;
 }
-@keyframes resultRefresh { 0% { filter: brightness(2); } 100% { filter: brightness(1); } }
+@keyframes resultRefresh { 0% { filter: brightness(2.5); } 100% { filter: brightness(1); } }
 
 .label {
   text-shadow: 3px 3px 0 #000;
-  font-size: 11px;
-  letter-spacing: 3px;
+  font-size: 10px;
+  letter-spacing: 2px;
   color: #00ffcc;
+  opacity: 0.8;
 }
 
 select {
@@ -145,15 +146,46 @@ select option {
 .custom-number .value {
   flex: 1;
   text-align: center;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
-  color: #ffcc00;
+  color: #ffffff;
   min-width: 80px;
+  text-shadow: 0 0 10px #ffffff88;
+}
+
+@media (max-width: 768px) {
+  .header {
+    text-shadow: 4px 4px 0 #e40012, -2px -2px 0 #00ffcc;
+  }
+  
+  .panel {
+    border-width: 6px;
+    box-shadow: 6px 6px 0 #e40012;
+  }
+  
+  .result-box {
+    border-width: 6px;
+  }
 }
 
 @media (max-width: 640px) {
-  .panel { padding: 16px; }
-  .custom-number button { width: 40px; height: 40px; font-size: 20px; }
-  .custom-number .value { font-size: 20px; }
-  .retro-button { padding: 10px 14px; font-size: 11px; }
+  .header {
+    text-shadow: 3px 3px 0 #e40012, -1.5px -1.5px 0 #00ffcc;
+    letter-spacing: 4px;
+  }
+  .panel { 
+    padding: 16px;
+  }
+  .custom-number button { 
+    width: 40px;
+    height: 40px; 
+    font-size: 20px;
+  }
+  .custom-number .value {
+    font-size: 20px;
+  }
+  .retro-button { 
+    padding: 10px 14px;
+    font-size: 11px;
+  }
 }

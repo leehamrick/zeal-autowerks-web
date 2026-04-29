@@ -33,6 +33,11 @@
     </div>
 
     <div class="grid lg:grid-cols-12 gap-8">
+       <!-- RESULTS (now first in order for mobile) -->
+      <div class="lg:col-span-5 lg:order-last">
+        <div id="results" class="result-box rounded-none p-8 sticky top-6"></div>
+      </div>
+
       <!-- INPUTS -->
       <div class="lg:col-span-7 space-y-8">
 
@@ -249,11 +254,6 @@
               </div>
           </div>
         </div>
-      </div>
-
-      <!-- RESULTS -->
-      <div class="lg:col-span-5">
-        <div id="results" class="result-box rounded-none p-8 sticky top-6"></div>
       </div>
     </div>
 
