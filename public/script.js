@@ -237,10 +237,12 @@ window.onload = () => {
     if (!id) return;
 
     const start = (e) => {
+      e.preventDefault();
       startLongPress(id, step, isIncrement ? 1 : -1);
     };
 
     const stop = (e) => {
+      e.preventDefault();
       stopLongPress();
     };
 
@@ -249,8 +251,11 @@ window.onload = () => {
     btn.addEventListener('mouseup', stop);
     btn.addEventListener('mouseleave', stop);
     btn.addEventListener('touchend', stop);
+    btn.addEventListener('touchcancel', stop);
+    btn.addEventListener('contextmenu', (e) => e.preventDefault()); // stops Android copy menu
   });
 
+  // Boot sound
   setTimeout(() => playBeep(440, 100), 300);
   setTimeout(() => playBeep(660, 100), 450);
   setTimeout(() => playBeep(880, 180), 600);
