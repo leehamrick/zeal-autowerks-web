@@ -174,7 +174,7 @@ function calculate() {
   const millingMm = milling * 25.4;
   const pistonToDeckHeight = deckHeight - rodLength - compHeight - (stroke / 2) - millingMm;
 
-  // Head gasket volume (exact original formula)
+  // Head gasket volume
   const headGasketVolume = 
     (((bore - (-gasketBoreDiff)) / 2) * ((bore - (-gasketBoreDiff)) / 2)) * 
     pi * 
@@ -182,7 +182,7 @@ function calculate() {
 
   const combustionChamberVolume = chamber * 4;
 
-  // Compression ratio (exact original math)
+  // Compression ratio
   const tdcVolume = sweptVolume - pistonDomeDisplacement + combustionChamberVolume + headGasketVolume;
   const bdcVolume = combustionChamberVolume + headGasketVolume - pistonDomeDisplacement;
 
@@ -219,14 +219,10 @@ window.onload = () => {
   calculate();
 
   document.querySelectorAll('.custom-number button').forEach(btn => {
-    const onclickStr = btn.getAttribute('onclick');
-    const idMatch = onclickStr.match(/increment|decrement\('(.*?)'/);
-    const id = idMatch ? idMatch[1] : null;
-    const stepMatch = onclickStr.match(/, ([\d.]+)/);
-    const step = stepMatch ? parseFloat(stepMatch[1]) : 0.1;
-    const isIncrement = onclickStr.includes('increment');
+    const id = btn.getAttribute('onclick').match(/'(.*?)'/)[1];
+    const step = parseFloat(btn.getAttribute('onclick').match(/, ([\d.]+)/)[1]);
 
-    if (!id) return;
+    const isIncrement = btn.textContent.trim() === '+';
 
     const start = () => startLongPress(id, step, isIncrement ? 1 : -1);
     const stop = () => stopLongPress();
