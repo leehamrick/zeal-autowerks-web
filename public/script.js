@@ -1,4 +1,6 @@
 let audioCtx;
+let longPressTimer;
+
 function playBeep(freq = 440, duration = 80, type = 'square') {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const osc = audioCtx.createOscillator();
@@ -101,6 +103,23 @@ function decrement(id, step) {
   playBeep(660, 30, 'sine');
 }
 
+function startLongPress(id, step, direction) {
+  if (longPressTimer) clearInterval(longPressTimer);
+  longPressTimer = setInterval(() => {
+    values[id] = parseFloat((values[id] + direction * step).toFixed(3));
+    updateDisplay(id);
+    calculate();
+    playBeep(880, 20, 'sine');
+  }, 60);   // adjust 60 if you want faster/slower
+}
+
+function stopLongPress() {
+  if (longPressTimer) {
+    clearInterval(longPressTimer);
+    longPressTimer = null;
+  }
+}
+
 function createPresetButtons() {
   const container = document.getElementById('preset-container');
   container.innerHTML = '';
@@ -198,6 +217,27 @@ window.onload = () => {
   createPresetButtons();
   Object.keys(values).forEach(k => updateDisplay(k));
   calculate();
+
+  document.querySelectorAll('.custom-number button').forEach(btn => {
+    const onclickStr = btn.getAttribute('onclick');
+    const idMatch = onclickStr.match(/increment|decrement\('(.*?)'/);
+    const id = idMatch ? idMatch[1] : null;
+    const stepMatch = onclickStr.match(/, ([\d.]+)/);
+    const step = stepMatch ? parseFloat(stepMatch[1]) : 0.1;
+    const isIncrement = onclickStr.includes('increment');
+
+    if (!id) return;
+
+    const start = () => startLongPress(id, step, isIncrement ? 1 : -1);
+    const stop = () => stopLongPress();
+
+    btn.addEventListener('mousedown', start);
+    btn.addEventListener('touchstart', start);
+    btn.addEventListener('mouseup', stop);
+    btn.addEventListener('mouseleave', stop);
+    btn.addEventListener('touchend', stop);
+  });
+
   setTimeout(() => playBeep(440, 100), 300);
   setTimeout(() => playBeep(660, 100), 450);
   setTimeout(() => playBeep(880, 180), 600);
