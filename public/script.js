@@ -231,10 +231,31 @@ function calculate() {
   `;
 }
 
+function showStartModal() {
+  const modal = document.getElementById('start-modal');
+  const startBtn = document.getElementById('start-button');
+
+  modal.style.display = 'flex';
+
+  startBtn.onclick = () => {
+    // Play the boot-up sound sequence
+    playBeep(440, 100);
+    setTimeout(() => playBeep(660, 100), 120);
+    setTimeout(() => playBeep(880, 180), 280);
+
+    // Close modal
+    modal.style.opacity = '0';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 600);
+  };
+}
+
 window.onload = () => {
   createPresetButtons();
   Object.keys(values).forEach(k => updateDisplay(k));
   calculate();
+  showStartModal();
 
   document.querySelectorAll('.custom-number button').forEach(btn => {
     const onclickStr = btn.getAttribute('onclick');
