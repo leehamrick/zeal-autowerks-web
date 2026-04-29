@@ -4,7 +4,14 @@ let longPressDelayTimer;
 let longPressRepeatTimer;
 
 function playBeep(freq = 440, duration = 80, type = 'square') {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.connect(gain).connect(audioCtx.destination);
@@ -12,7 +19,10 @@ function playBeep(freq = 440, duration = 80, type = 'square') {
   osc.type = type;
   gain.gain.value = 0.3;
   osc.start();
-  setTimeout(() => { gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.02); osc.stop(audioCtx.currentTime + 0.1); }, duration);
+  setTimeout(() => { 
+    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.02); 
+    osc.stop(audioCtx.currentTime + 0.1); 
+  }, duration);
 }
 
 const presets = [
