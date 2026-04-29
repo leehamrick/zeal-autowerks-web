@@ -2,24 +2,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>D-SERIES TUNER CALCULATOR • ZEAL AUTO WERKS</title>
+  <title>D-SERIES COMPRESSION CALCULATOR • ZEAL AUTOWERKS</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css">
   <script src="script.js"></script>
 </head>
 <body class="crt min-h-screen pb-12">
-  <div class="max-w-6xl mx-auto px-4 py-6 md:p-6">
+  <div class="max-w-7xl mx-auto px-4 py-6 md:p-8 lg:p-10">
 
     <!-- HEADER -->
     <div class="panel rounded-none p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
-        <div class="header text-4xl md:text-5xl font-black text-[#ffcc00] tracking-[6px]">ZEAL AUTO WERKS</div>
-        <div class="text-[#e40012] text-2xl md:text-3xl font-black tracking-widest mt-1">D-SERIES TUNER CALCULATOR</div>
+        <div class="header text-4xl md:text-5xl font-black text-[#ffcc00] tracking-[6px]">ZEAL AUTOWERKS</div>
+        <div class="text-[#e40012] text-2xl md:text-3xl font-black tracking-widest mt-1">D-SERIES COMPRESSION CALCULATOR</div>
       </div>
       <div class="text-right text-[#00ffcc] text-xs leading-tight font-bold">
         HONDA • ACURA<br>
         D15 • D16 • D17<br>
-        <span class="text-[#ffcc00]">1998-2005 EDITION</span>
+        <span class="text-[#ffcc00]">1998 EDITION</span>
       </div>
     </div>
 
@@ -38,9 +38,9 @@
 
         <!-- Block -->
         <div class="panel rounded-none p-6">
-          <div class="label">BLOCK</div>
+          <div class="label">CYLINDER BLOCK</div>
           <select id="block" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
-            <option value="">SELECT BLOCK</option>
+            <option value="">BLOCK</option>
             <option value="D16-D17">D16 - D17</option>
             <option value="D15">D15</option>
             <option value="Other">OTHER</option>
@@ -69,9 +69,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Crank panel -->
           <div class="panel rounded-none p-6">
-            <div class="label">CRANK</div>
+            <div class="label">CRANKSHAFT</div>
             <select id="crank" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
-              <option value="">SELECT CRANK</option>
+              <option value="">CRANK</option>
               <option value="D16">D16</option>
               <option value="D17">D17</option>
               <option value="D15">D15</option>
@@ -91,7 +91,7 @@
           <div class="panel rounded-none p-6">
             <div class="label">CONNECTING ROD</div>
             <select id="rod" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
-              <option value="">SELECT ROD</option>
+              <option value="">ROD</option>
               <option value="D16-D17">D16/D17/D15Z1</option>
               <option value="D15B">D15B1/B2/B8/B7</option>
               <option value="Other">OTHER</option>
@@ -112,9 +112,9 @@
 
           <!-- HEAD PANEL (now half width + includes Milling) -->
           <div class="panel rounded-none p-6">
-            <div class="label">HEAD</div>
+            <div class="label">CYLINDER HEAD</div>
             <select id="head" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
-              <option value="">SELECT HEAD</option>
+              <option value="">HEAD</option>
               <option value="D15B7-D16A6">D15B7 - D16A6</option>
               <option value="D16Z6-Y7">D16Z6/Y7 - D15B</option>
               <option value="D16Y8">D16Y8</option>
@@ -147,7 +147,7 @@
           <div class="panel rounded-none p-6">
             <div class="label">PISTON</div>
             <select id="piston" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
-              <option value="">SELECT PISTON</option>
+              <option value="">PISTON</option>
               <option value="PM3">PM3 (US D15B7)</option>
               <option value="P07-010">P07 (US D15Z1)</option>
               <option value="PM6">PM6 (US D16A6)</option>
@@ -193,7 +193,7 @@
           <div class="panel rounded-none p-6">
             <div class="label">HEAD GASKET</div>
             <select id="gasket" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
-              <option value="">SELECT GASKET</option>
+              <option value="">HEAD GASKET</option>
               <option value="D15B7-D16A6">D15B7 - D16A6</option>
               <option value="D16Y8-D16Z6">D16Y8 - D16Z6</option>
               <option value="D16Y8-2layer">D16Y8 2-layer</option>
@@ -223,7 +223,7 @@
           <!-- ADVANCED TUNING (half width, Elevation at very bottom) -->
           <div class="panel rounded-none p-6">
             <div class="label mb-4">ADVANCED TUNING</div>
-              <div>
+              <div class="mb-4">
                 <div class="label">MAX RPM</div>
                 <div class="custom-number mt-3">
                   <button onclick="decrement('rpm', 100)" class="retro-button">-</button>
@@ -231,8 +231,8 @@
                   <button onclick="increment('rpm', 100)" class="retro-button">+</button>
                 </div>
               </div>
-              <div>
-                <div class="label">BOOST (psi)</div>
+              <div class="mb-4">
+                <div class="label">BOOST (PSI)</div>
                 <div class="custom-number mt-3">
                   <button onclick="decrement('boost', 0.1)" class="retro-button">-</button>
                   <div id="boost-display" class="value">0</div>
@@ -240,7 +240,7 @@
                 </div>
               </div>
               <div>
-                <div class="label">ELEVATION (ft)</div>
+                <div class="label">ELEVATION (FT)</div>
                 <div class="custom-number mt-3">
                   <button onclick="decrement('elevation', 500)" class="retro-button">-</button>
                   <div id="elevation-display" class="value">0</div>
@@ -257,13 +257,8 @@
       </div>
     </div>
 
-    <!-- LOADED POPUP -->
-    <div id="loaded-popup" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-black border-4 border-[#00ffcc] text-[#00ffcc] px-8 py-4 text-xl font-black tracking-widest shadow-2xl z-50">
-      BUILD LOADED!
-    </div>
-
     <div class="text-center text-[#00ffcc] text-[10px] mt-12 tracking-widest">
-      ZEAL AUTO WERKS • 2002 • HONDA D-SERIES EDITION • REAL-TIME • MOBILE READY
+      ZEAL AUTOWERKS • 2026 • HONDA D-SERIES COMPRESSION CALCULATOR
     </div>
   </div>
 </body>

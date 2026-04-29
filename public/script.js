@@ -34,9 +34,9 @@ const presets = [
 ];
 
 const values = {
-  bore: 75, stroke: 84.5, deckHeight: 212, cylinders: 4,
-  chamber: 42.5, dome: -9.5, compHeight: 30.5,
-  rodLength: 137, gasketThick: 0.027, gasketBoreDiff: 1,
+  bore: 75, stroke: 90.0, deckHeight: 212, cylinders: 4,
+  chamber: 38.0, dome: -3.4, compHeight: 29.5,
+  rodLength: 137, gasketThick: 0.048, gasketBoreDiff: 0,
   milling: 0, rpm: 7200, elevation: 0, boost: 0
 };
 
@@ -124,7 +124,7 @@ function startLongPress(id, step, direction) {
       calculate();
       playBeep(880, 20, 'sine');
     }, 60); // repeat speed (lower = faster)
-  }, 350); // initial delay (350ms feels natural and prevents accidental repeats)
+  }, 350); // initial delay
 }
 
 function stopLongPress() {
@@ -208,7 +208,7 @@ function calculate() {
 
   // Extra values
   const rodRatio        = rodLength / stroke;
-  const effectiveCR     = staticCR * (1 + values.boost / 14.7);
+  const effectiveCR     = (staticCR * (1 + values.boost / 14.7)) - (values.elevation / 1000 * 0.2);
   const meanPistonSpeed = (stroke / 1000) * values.rpm * 2 / 60;
   const maxPistonAccel  = (pi * pi * stroke * values.rpm * values.rpm) / (90000 * 1000);
 
