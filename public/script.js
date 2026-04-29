@@ -159,7 +159,7 @@ function calculate() {
   const headGasketVolume = 
     (((bore - (-gasketBoreDiff)) / 2) * ((bore - (-gasketBoreDiff)) / 2)) * 
     pi * 
-    ((gasketThick - (-pistonToDeckHeight)) * 25.4) / 1000 * 4;
+    ((gasketThick * 25.4) - (-pistonToDeckHeight)) / 1000 * 4;
 
   const combustionChamberVolume = chamber * 4;
 
