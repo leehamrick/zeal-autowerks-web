@@ -167,7 +167,7 @@ function calculate() {
   const tdcVolume = sweptVolume - pistonDomeDisplacement + combustionChamberVolume + headGasketVolume;
   const bdcVolume = combustionChamberVolume + headGasketVolume - pistonDomeDisplacement;
 
-  const staticCR = Math.round((tdcVolume / bdcVolume) * 100) / 100;
+  const staticCR = tdcVolume / bdcVolume;
 
   // Extra values
   const rodRatio        = rodLength / stroke;
