@@ -157,32 +157,35 @@ select option {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  animation: modalFadeIn 0.6s ease;
+  z-index: 10000;
+  height: 100vh;
 }
 
 .modal-panel {
   background: #001122;
   border: 8px solid #ffcc00;
   box-shadow: 12px 12px 0 #e40012;
-  padding: 40px 60px;
+  padding: 40px 50px;
   text-align: center;
-  max-width: 90%;
+  max-width: 92%;
 }
 
-.modal-header {
-  font-size: 28px;
-  font-weight: bold;
+.modal-title {
+  font-size: 26px;
   color: #e40012;
   text-shadow: 4px 4px 0 #00ffcc;
-  margin-bottom: 20px;
   letter-spacing: 6px;
+  margin-bottom: 30px;
 }
 
-.key-visual {
-  font-size: 80px;
+.key-cylinder {
+  font-size: 68px;
+  font-weight: bold;
+  color: #ffcc00;
+  text-shadow: 0 0 20px #e40012;
   margin: 20px 0;
-  animation: keyPulse 1.5s infinite alternate;
+  animation: keyPulse 1.2s infinite alternate;
+  letter-spacing: 8px;
 }
 
 .modal-start-btn {
@@ -191,12 +194,7 @@ select option {
   margin-top: 20px;
 }
 
-@keyframes modalFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 @keyframes keyPulse {
   from { transform: scale(0.95); }
-  to { transform: scale(1.05); }
+  to { transform: scale(1.08); }
 }

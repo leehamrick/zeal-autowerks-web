@@ -238,7 +238,7 @@ function showStartModal() {
   modal.style.display = 'flex';
 
   startBtn.onclick = () => {
-    // Play the boot-up sound sequence
+    // Play the boot-up sound
     playBeep(440, 100);
     setTimeout(() => playBeep(660, 100), 120);
     setTimeout(() => playBeep(880, 180), 280);
