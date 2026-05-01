@@ -141,17 +141,47 @@ select option {
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
   pointer-events: auto;
+  cursor: pointer;
 }
 
-.custom-number .value {
+/* NEW: Styles for the number input to match the retro theme */
+.value-input {
   flex: 1;
   text-align: center;
-  font-size: 22px;
+  font-size: 18px; /* Slightly smaller to fit */
+  font-family: 'Press Start 2P', monospace; /* Ensure retro font */
   font-weight: bold;
   color: #ffffff;
-  min-width: 80px;
+  background: transparent;
+  border: none;
+  outline: none;
+  min-width: 0; /* allows shrinking */
+  width: 100%;
   text-shadow: 0 0 10px #ffffff88;
+  -moz-appearance: textfield; /* Firefox */
 }
+
+/* Hide spin buttons in webkit */
+.value-input::-webkit-outer-spin-button,
+.value-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.value-input:focus {
+    background-color: rgba(0, 255, 204, 0.1); /* subtle highlight when typing */
+}
+
+
+/* DANGER TO MANIFOLD STYLES */
+.blink {
+    animation: dangerBlink 0.3s infinite alternate;
+}
+@keyframes dangerBlink {
+    0% { opacity: 0.1; }
+    100% { opacity: 1; }
+}
+
 
 @media (max-width: 768px) {
   .header {
@@ -181,11 +211,19 @@ select option {
     height: 40px; 
     font-size: 20px;
   }
-  .custom-number .value {
-    font-size: 20px;
+  .value-input {
+    font-size: 16px; /* Even smaller for mobile */
   }
   .retro-button { 
     padding: 10px 14px;
     font-size: 11px;
+  }
+  
+  /* Ensure modal result box animates properly */
+  #mobile-details-modal .result-box {
+      animation: none; /* Disable refresh flash on the modal container itself */
+  }
+  #mobile-details-modal.show {
+      display: flex;
   }
 }

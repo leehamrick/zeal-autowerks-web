@@ -2,11 +2,33 @@ let audioCtx;
 let longPressTimer;
 let longPressDelayTimer;
 let longPressRepeatTimer;
+let audioInitialized = false;
+let spoolTimer;
+let lastBoostVal = 0;
+let dangerBeepInterval;
+let isWarningDismissed = false;
+let isWarningIgnoredForever = false;
+
+// Function to initialize audio on first user interaction
+function initAudio() {
+    if (!audioInitialized) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Play a silent note to unlock audio engine
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0;
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+        
+        audioInitialized = true;
+    }
+}
+
 
 function playBeep(freq = 440, duration = 80, type = 'square') {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
+  if (!audioInitialized || !audioCtx) return;
 
   if (audioCtx.state === 'suspended') {
     audioCtx.resume();
@@ -25,9 +47,56 @@ function playBeep(freq = 440, duration = 80, type = 'square') {
   }, duration);
 }
 
+function playTurboSpool() {
+    if (!audioInitialized || !audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    // Spool up sound (sine wave rising in frequency)
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(3000, audioCtx.currentTime + 0.8);
+    
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.4);
+    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.8);
+
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.8);
+
+    // Blow off valve sound (white noise burst) after spool
+    setTimeout(() => {
+        const bufferSize = audioCtx.sampleRate * 0.3; // 0.3 seconds of noise
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+
+        const noiseSrc = audioCtx.createBufferSource();
+        noiseSrc.buffer = buffer;
+        
+        // Use a bandpass filter to make it sound "whoosh-y"
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 4000;
+        filter.Q.value = 1;
+
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+        noiseSrc.connect(filter).connect(noiseGain).connect(audioCtx.destination);
+        noiseSrc.start();
+    }, 800); // Trigger right as spool finishes
+}
+
 const presets = [
   {name:"Stock D16Y8", block:"D16-D17", crank:"D16", head:"D16Y8", piston:"P2P", rod:"D16-D17", gasket:"D16Y8-D16Z6"},
-  {name:"Mini-Me D15+Y8", block:"D15", crank:"D15", head:"D16Y8", piston:"PM3", rod:"D15B", gasket:"D15B7-D16A6"},
+  {name:"Mini-Me", block:"D15", crank:"D15", head:"D16Y8", piston:"PM3", rod:"D15B", gasket:"D15B7-D16A6"}, // Shortened name for mobile
   {name:"D16Z6 VTEC", block:"D16-D17", crank:"D16", head:"D16Z6-Y7", piston:"P28-A01", rod:"D16-D17", gasket:"D16Y8-D16Z6"},
   {name:"Vitara Turbo", block:"D16-D17", crank:"D16", head:"D16Z6-Y7", piston:"Vitara", rod:"D16-D17", gasket:"D16Y8-D16Z6"},
   {name:"D17A2", block:"D16-D17", crank:"D17", head:"D17A2", piston:"PLR-A0", rod:"D16-D17", gasket:"D17A2"}
@@ -40,12 +109,72 @@ const values = {
   milling: 0, rpm: 7200, elevation: 0, boost: 0
 };
 
+// Input validation limits
+const limits = {
+    bore: { min: 60, max: 90 },
+    stroke: { min: 60, max: 110 },
+    deckHeight: { min: 180, max: 250 },
+    chamber: { min: 20, max: 60 },
+    dome: { min: -50, max: 50 },
+    compHeight: { min: 20, max: 50 },
+    rodLength: { min: 100, max: 180 },
+    gasketThick: { min: 0.01, max: 0.2 },
+    gasketBoreDiff: { min: -5, max: 10 },
+    milling: { min: -0.1, max: 0.2 },
+    rpm: { min: 1000, max: 15000 },
+    elevation: { min: 0, max: 15000 },
+    boost: { min: 0, max: 60 }
+};
+
 function updateDisplay(id) {
   const el = document.getElementById(id + '-display');
-  if (el) el.textContent = values[id];
+  // Use .value since they are now <input> elements
+  if (el) el.value = values[id];
+}
+
+function handleTurboSoundCheck() {
+    // If boost has changed to be > 0, trigger the timer
+    if (values.boost > 0) {
+        clearTimeout(spoolTimer);
+        spoolTimer = setTimeout(() => {
+            playTurboSpool();
+        }, 1000); // Wait 1 second after last interaction to spool
+    }
+}
+
+// Handle manual text input
+function handleInputChange(id, val) {
+    if (!audioInitialized) initAudio(); // Also init audio on input change
+    
+    let parsed = parseFloat(val);
+    
+    if (isNaN(parsed)) {
+        // Revert to old value if invalid
+        updateDisplay(id);
+        return;
+    }
+
+    // Apply limits
+    if (limits[id]) {
+        if (parsed < limits[id].min) parsed = limits[id].min;
+        if (parsed > limits[id].max) parsed = limits[id].max;
+    }
+
+    values[id] = parsed;
+    updateDisplay(id);
+    
+    // Changing a value resets the dismissal state so they get warned again if it's still dangerous
+    isWarningDismissed = false; 
+
+    calculate();
+    playBeep(880, 40, 'sine');
+
+    if(id === 'boost') handleTurboSoundCheck();
 }
 
 function autoFill() {
+  if (!audioInitialized) initAudio();
+  
   const block = document.getElementById('block').value;
   const crank = document.getElementById('crank').value;
   const head = document.getElementById('head').value;
@@ -97,32 +226,68 @@ function autoFill() {
   else if (gasket === "D16Y8-2layer") { values.gasketThick = 0.025; values.gasketBoreDiff = 0; }
   else if (gasket === "D17A2") { values.gasketThick = 0.026; values.gasketBoreDiff = 0; }
 
+  isWarningDismissed = false;
   Object.keys(values).forEach(k => updateDisplay(k));
   calculate();
 }
 
 function increment(id, step) {
-  values[id] = parseFloat((values[id] + step).toFixed(3));
+  let newVal = values[id] + step;
+  if (limits[id] && newVal > limits[id].max) newVal = limits[id].max;
+  
+  values[id] = parseFloat(newVal.toFixed(3));
   updateDisplay(id);
+  
+  isWarningDismissed = false;
+
   calculate();
   playBeep(880, 30, 'sine');
+  if(id === 'boost') handleTurboSoundCheck();
 }
 
 function decrement(id, step) {
-  values[id] = parseFloat((values[id] - step).toFixed(3));
+  let newVal = values[id] - step;
+  if (limits[id] && newVal < limits[id].min) newVal = limits[id].min;
+
+  values[id] = parseFloat(newVal.toFixed(3));
   updateDisplay(id);
+
+  isWarningDismissed = false;
+
   calculate();
   playBeep(660, 30, 'sine');
+  if(id === 'boost') handleTurboSoundCheck();
 }
 
 function startLongPress(id, step, direction) {
   stopLongPress();
+  
+  // IMMEDIATELY trigger the first increment/decrement
+  if (direction === 1) {
+    increment(id, step);
+  } else {
+    decrement(id, step);
+  }
+
+  // Then start the delay for repeating
   longPressDelayTimer = setTimeout(() => {
     longPressRepeatTimer = setInterval(() => {
-      values[id] = parseFloat((values[id] + direction * step).toFixed(3));
+      let newVal = values[id] + (direction * step);
+      
+      // Enforce limits during long press
+      if (limits[id]) {
+          if (newVal > limits[id].max) newVal = limits[id].max;
+          if (newVal < limits[id].min) newVal = limits[id].min;
+      }
+
+      values[id] = parseFloat(newVal.toFixed(3));
       updateDisplay(id);
+      
+      isWarningDismissed = false;
+
       calculate();
       playBeep(880, 20, 'sine');
+      if(id === 'boost') handleTurboSoundCheck();
     }, 60); // repeat speed (lower = faster)
   }, 350); // initial delay
 }
@@ -143,9 +308,12 @@ function createPresetButtons() {
   container.innerHTML = '';
   presets.forEach((p, i) => {
     const btn = document.createElement('button');
-    btn.className = 'retro-button flex-1 md:flex-none text-sm md:text-base';
+    btn.className = 'retro-button text-xs sm:text-sm md:text-base w-full md:w-auto md:flex-1'; // Better grid for mobile
     btn.textContent = p.name;
-    btn.onclick = () => loadPreset(i, btn);
+    btn.onclick = (e) => {
+        if(!audioInitialized) initAudio(); // Make sure audio is ready
+        loadPreset(i, btn);
+    }
     container.appendChild(btn);
   });
 }
@@ -157,6 +325,7 @@ function loadPreset(i, buttonElement) {
   document.querySelectorAll('.retro-button').forEach(b => b.classList.remove('selected'));
   buttonElement.classList.add('selected');
   
+  // Play preset load sound
   playBeep(660, 60, 'sawtooth'); setTimeout(() => playBeep(880, 80, 'sawtooth'), 40); setTimeout(() => playBeep(1100, 120, 'sine'), 90);
 
   if (p.block) document.getElementById('block').value = p.block;
@@ -168,6 +337,26 @@ function loadPreset(i, buttonElement) {
 
   autoFill();
 }
+
+function dismissWarning(forever = false) {
+    if (forever) {
+        isWarningIgnoredForever = true;
+    } else {
+        isWarningDismissed = true;
+    }
+    
+    const warningEl = document.getElementById('danger-warning');
+    if (warningEl) {
+        warningEl.classList.add('hidden');
+    }
+    if (dangerBeepInterval) {
+        clearInterval(dangerBeepInterval);
+        dangerBeepInterval = null;
+    }
+    // Play a low pitched confirm sound
+    playBeep(220, 150, 'square');
+}
+
 
 function calculate() {
   const bore           = values.bore;
@@ -194,18 +383,43 @@ function calculate() {
   const combustionChamberVolume = chamber * 4;
   const tdcVolume = sweptVolume - pistonDomeDisplacement + combustionChamberVolume + headGasketVolume;
   const bdcVolume = combustionChamberVolume + headGasketVolume - pistonDomeDisplacement;
-  const staticCR = tdcVolume / bdcVolume;
+  
+  // Prevent Infinity/NaN
+  let staticCR = tdcVolume / bdcVolume;
+  if (!isFinite(staticCR) || staticCR < 0) staticCR = 0;
 
-  const rodRatio        = rodLength / stroke;
+  const rodRatio        = stroke > 0 ? rodLength / stroke : 0;
   const effectiveCR     = (staticCR * (1 + values.boost / 14.7)) - (values.elevation / 1000 * 0.2);
   const meanPistonSpeed = (stroke / 1000) * values.rpm * 2 / 60;
   const maxPistonAccel  = (pi * pi * stroke * values.rpm * values.rpm) / (90000 * 1000);
   const totalDisplacement = sweptVolume;
 
-  const container = document.getElementById('results');
-  const newContainer = container.cloneNode(false);
-  
-  newContainer.innerHTML = `
+
+  // --- DANGER TO MANIFOLD CHECK ---
+  const warningEl = document.getElementById('danger-warning');
+  if (warningEl && !isWarningIgnoredForever) {
+      // Arbitrary danger limits: Mean piston speed > 25m/s OR Effective CR > 14:1
+      if ((meanPistonSpeed > 25 || effectiveCR > 14) && !isWarningDismissed) {
+          warningEl.classList.remove('hidden');
+          
+          // Start aggressive beeping if it's not already beeping
+          if (!dangerBeepInterval) {
+              dangerBeepInterval = setInterval(() => {
+                  playBeep(900, 100, 'square'); // Harsh, high pitched beep
+              }, 250); 
+          }
+
+      } else {
+          warningEl.classList.add('hidden');
+          if (dangerBeepInterval) {
+              clearInterval(dangerBeepInterval);
+              dangerBeepInterval = null;
+          }
+      }
+  }
+
+
+  const resultsHTML = `
     <div class="text-center mb-6">
       <div class="text-[#00ffcc] text-xs tracking-[4px]">STATIC COMPRESSION</div>
       <div class="text-6xl md:text-5xl font-black text-[#ffcc00] leading-none">${staticCR.toFixed(2)}:1</div>
@@ -220,8 +434,29 @@ function calculate() {
     </div>
   `;
 
-  // By replacing the node, we force the browser to re-run the CSS animation.
-  container.parentNode.replaceChild(newContainer, container);
+  // Update Desktop Results
+  const container = document.getElementById('results');
+  if(container) {
+      const newContainer = container.cloneNode(false);
+      newContainer.innerHTML = resultsHTML;
+      container.parentNode.replaceChild(newContainer, container);
+  }
+
+  // Update Mobile Sticky Bar
+  const stickyCr = document.getElementById('sticky-cr');
+  const stickyDisp = document.getElementById('sticky-disp');
+  if(stickyCr) stickyCr.innerText = `${staticCR.toFixed(2)}:1`;
+  if(stickyDisp) stickyDisp.innerText = `${totalDisplacement.toFixed(0)} cc`;
+
+  // Update Mobile Modal Content
+  const modalContent = document.getElementById('mobile-results-content');
+  if(modalContent) {
+      // Create a fresh clone to trigger animation in modal too
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = resultsHTML;
+      modalContent.innerHTML = '';
+      modalContent.appendChild(tempDiv);
+  }
 }
 
 window.onload = () => {
@@ -239,13 +474,27 @@ window.onload = () => {
 
     if (!id) return;
 
+    // Remove the inline onclick handlers since we handle it here
+    btn.removeAttribute('onclick');
+
     const start = (e) => {
-      e.preventDefault();
+      // Don't prevent default on touchstart immediately if we want scrolling to work, 
+      // but we DO want to prevent it so it doesn't fire a duplicate click event.
+      // Easiest fix for mobile buttons not working is ensuring we immediately trigger
+      // the first step, then wait for the long press.
+      if (e.cancelable) e.preventDefault(); 
+      document.getElementById(id + '-display').blur();
+      
+      // Initialize audio if not already done
+      if (!audioInitialized) {
+          initAudio();
+      }
+
       startLongPress(id, step, isIncrement ? 1 : -1);
     };
 
     const stop = (e) => {
-      e.preventDefault();
+      if (e.cancelable) e.preventDefault();
       stopLongPress();
     };
 
@@ -257,9 +506,4 @@ window.onload = () => {
     btn.addEventListener('touchcancel', stop);
     btn.addEventListener('contextmenu', (e) => e.preventDefault()); // stops Android copy menu
   });
-
-  // Boot sound
-  setTimeout(() => playBeep(440, 100), 300);
-  setTimeout(() => playBeep(660, 100), 450);
-  setTimeout(() => playBeep(880, 180), 600);
 };

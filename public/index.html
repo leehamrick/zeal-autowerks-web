@@ -7,16 +7,28 @@
   <link rel="stylesheet" href="style.css">
   <script src="script.js"></script>
 </head>
-<body class="crt min-h-screen pb-12">
-  <div class="max-w-7xl mx-auto px-4 py-6 md:p-8 lg:p-10">
+<body class="crt min-h-screen pb-24 md:pb-12">
+  <div class="max-w-7xl mx-auto px-4 py-6 md:p-8 lg:p-10 relative">
+    
+    <!-- DANGER TO MANIFOLD OVERLAY -->
+    <div id="danger-warning" class="hidden fixed inset-0 z-[100] pointer-events-auto flex items-center justify-center bg-black/80">
+        <div class="danger-box bg-red-600 border-8 border-white p-6 md:p-10 text-center shadow-[0_0_100px_red] w-full max-w-lg mx-4">
+            <div class="text-white text-3xl md:text-5xl font-black tracking-widest uppercase mb-4 blink">WARNING<br>DANGER TO MANIFOLD</div>
+            <div class="text-yellow-300 text-lg md:text-xl font-bold mb-8">EXCESSIVE PISTON SPEED / COMPRESSION</div>
+            <div class="space-y-4">
+                <button onclick="dismissWarning(false)" class="retro-button w-full text-xl bg-white text-black border-black border-4 py-4 hover:bg-gray-200">SHUT UP (FOR NOW)</button>
+                <button onclick="dismissWarning(true)" class="retro-button w-full text-sm bg-black text-white border-white border-4 py-2 hover:bg-gray-800">I KNOW WHAT I'M DOING (DISABLE)</button>
+            </div>
+        </div>
+    </div>
 
     <!-- HEADER -->
     <div class="panel rounded-none p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
         <div class="header text-4xl md:text-5xl font-black text-[#ffcc00] tracking-[6px]">ZEAL AUTOWERKS</div>
-        <div class="text-[#e40012] text-2xl md:text-3xl font-black tracking-widest mt-1">D-SERIES COMPRESSION CALCULATOR</div>
+        <div class="text-[#e40012] text-xl md:text-3xl font-black tracking-widest mt-1">D-SERIES COMPRESSION CALCULATOR</div>
       </div>
-      <div class="text-right text-[#00ffcc] text-xs leading-tight font-bold">
+      <div class="text-center md:text-right text-[#00ffcc] text-xs leading-tight font-bold w-full md:w-auto">
         HONDA • ACURA<br>
         D15 • D16 • D17<br>
         <span class="text-[#ffcc00]">1998 EDITION</span>
@@ -27,35 +39,35 @@
     <div class="mb-8">
       <div class="label mb-4 flex items-center justify-between">
         <span>SELECT YOUR BUILD • ONE TAP</span>
-        <span class="text-[#e40012] text-xs">90s TUNER MODE</span>
+        <span class="text-[#e40012] text-xs hidden md:inline">90s TUNER MODE</span>
       </div>
-      <div id="preset-container" class="flex flex-wrap gap-3"></div>
+      <div id="preset-container" class="grid grid-cols-2 md:flex md:flex-wrap gap-2 md:gap-3"></div> <!-- Improved mobile grid -->
     </div>
 
-    <div class="grid lg:grid-cols-12 gap-8">
-       <!-- RESULTS (now first in order for mobile) -->
-      <div class="lg:col-span-5 lg:order-last">
+    <div class="grid lg:grid-cols-12 gap-6 md:gap-8">
+       <!-- RESULTS (hidden on mobile, uses sticky bar instead) -->
+      <div class="hidden lg:block lg:col-span-5 lg:order-last">
         <div id="results" class="result-box rounded-none p-8 sticky top-6"></div>
       </div>
 
       <!-- INPUTS -->
-      <div class="lg:col-span-7 space-y-8">
+      <div class="lg:col-span-7 space-y-6 md:space-y-8">
 
         <!-- Block -->
-        <div class="panel rounded-none p-6">
+        <div class="panel rounded-none p-4 md:p-6">
           <div class="label">CYLINDER BLOCK</div>
-          <select id="block" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
+          <select id="block" onchange="autoFill()" class="w-full mt-3 text-sm md:text-base">
             <option value="">BLOCK</option>
             <option value="D16-D17">D16 - D17</option>
             <option value="D15">D15</option>
             <option value="Other">OTHER</option>
           </select>
-          <div class="grid grid-cols-2 gap-6 mt-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-6">
             <div>
               <div class="label">BORE (mm)</div>
               <div class="custom-number mt-3">
                 <button onclick="decrement('bore', 0.1)" class="retro-button">-</button>
-                <div id="bore-display" class="value">75</div>
+                <input type="number" id="bore-display" class="value-input" value="75" onchange="handleInputChange('bore', this.value)" step="0.1" min="0">
                 <button onclick="increment('bore', 0.1)" class="retro-button">+</button>
               </div>
             </div>
@@ -63,7 +75,7 @@
               <div class="label">DECK HEIGHT (mm)</div>
               <div class="custom-number mt-3">
                 <button onclick="decrement('deckHeight', 0.1)" class="retro-button">-</button>
-                <div id="deckHeight-display" class="value">212</div>
+                <input type="number" id="deckHeight-display" class="value-input" value="212" onchange="handleInputChange('deckHeight', this.value)" step="0.1" min="0">
                 <button onclick="increment('deckHeight', 0.1)" class="retro-button">+</button>
               </div>
             </div>
@@ -71,41 +83,41 @@
         </div>
 
         <!-- Crank and Connecting Rod side by side -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <!-- Crank panel -->
-          <div class="panel rounded-none p-6">
+          <div class="panel rounded-none p-4 md:p-6">
             <div class="label">CRANKSHAFT</div>
-            <select id="crank" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
+            <select id="crank" onchange="autoFill()" class="w-full mt-3 text-sm md:text-base">
               <option value="">CRANK</option>
               <option value="D16">D16</option>
               <option value="D17">D17</option>
               <option value="D15">D15</option>
               <option value="Other">OTHER</option>
             </select>
-            <div class="mt-6">
+            <div class="mt-4 md:mt-6">
               <div class="label">STROKE (mm)</div>
               <div class="custom-number mt-3">
                 <button onclick="decrement('stroke', 0.1)" class="retro-button">-</button>
-                <div id="stroke-display" class="value">84.5</div>
+                <input type="number" id="stroke-display" class="value-input" value="84.5" onchange="handleInputChange('stroke', this.value)" step="0.1" min="0">
                 <button onclick="increment('stroke', 0.1)" class="retro-button">+</button>
               </div>
             </div>
           </div>
 
           <!-- Connecting Rod panel -->
-          <div class="panel rounded-none p-6">
+          <div class="panel rounded-none p-4 md:p-6">
             <div class="label">CONNECTING ROD</div>
-            <select id="rod" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
+            <select id="rod" onchange="autoFill()" class="w-full mt-3 text-sm md:text-base">
               <option value="">ROD</option>
               <option value="D16-D17">D16/D17/D15Z1</option>
               <option value="D15B">D15B1/B2/B8/B7</option>
               <option value="Other">OTHER</option>
             </select>
-            <div class="mt-6">
+            <div class="mt-4 md:mt-6">
               <div class="label">ROD LENGTH (mm)</div>
               <div class="custom-number mt-3">
                 <button onclick="decrement('rodLength', 0.1)" class="retro-button">-</button>
-                <div id="rodLength-display" class="value">137</div>
+                <input type="number" id="rodLength-display" class="value-input" value="137" onchange="handleInputChange('rodLength', this.value)" step="0.1" min="0">
                 <button onclick="increment('rodLength', 0.1)" class="retro-button">+</button>
               </div>
             </div>
@@ -113,12 +125,12 @@
         </div>
 
         <!-- Head + Piston side-by-side (new layout) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
 
           <!-- HEAD PANEL (now half width + includes Milling) -->
-          <div class="panel rounded-none p-6">
+          <div class="panel rounded-none p-4 md:p-6">
             <div class="label">CYLINDER HEAD</div>
-            <select id="head" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
+            <select id="head" onchange="autoFill()" class="w-full mt-3 text-sm md:text-base">
               <option value="">HEAD</option>
               <option value="D15B7-D16A6">D15B7 - D16A6</option>
               <option value="D16Z6-Y7">D16Z6/Y7 - D15B</option>
@@ -129,29 +141,29 @@
               <option value="D16A3">D16A3 (Australia)</option>
               <option value="Other">OTHER</option>
             </select>
-            <div class="mt-6">
+            <div class="mt-4 md:mt-6">
               <div class="label">CHAMBER VOL (cc)</div>
               <div class="custom-number mt-3">
                 <button onclick="decrement('chamber', 0.1)" class="retro-button">-</button>
-                <div id="chamber-display" class="value">42.5</div>
+                <input type="number" id="chamber-display" class="value-input" value="42.5" onchange="handleInputChange('chamber', this.value)" step="0.1" min="0">
                 <button onclick="increment('chamber', 0.1)" class="retro-button">+</button>
               </div>
             </div>
             <!-- Milling moved here -->
-            <div class="mt-6">
+            <div class="mt-4 md:mt-6">
               <div class="label">MILLING (in)</div>
               <div class="custom-number mt-3">
                 <button onclick="decrement('milling', 0.001)" class="retro-button">-</button>
-                <div id="milling-display" class="value">0</div>
+                <input type="number" id="milling-display" class="value-input" value="0" onchange="handleInputChange('milling', this.value)" step="0.001" min="0">
                 <button onclick="increment('milling', 0.001)" class="retro-button">+</button>
               </div>
             </div>
           </div>
 
           <!-- PISTON PANEL (half width, Comp Height now stacked below Dome/Dish) -->
-          <div class="panel rounded-none p-6">
+          <div class="panel rounded-none p-4 md:p-6">
             <div class="label">PISTON</div>
-            <select id="piston" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
+            <select id="piston" onchange="autoFill()" class="w-full mt-3 text-sm md:text-base">
               <option value="">PISTON</option>
               <option value="PM3">PM3 (US D15B7)</option>
               <option value="P07-010">P07 (US D15Z1)</option>
@@ -169,12 +181,12 @@
               <option value="Vitara">Vitara</option>
               <option value="Other">OTHER</option>
             </select>
-            <div class="mt-6 space-y-6">
+            <div class="mt-4 md:mt-6 space-y-4 md:space-y-6">
               <div>
                 <div class="label">DOME/DISH (cc)</div>
                 <div class="custom-number mt-3">
                   <button onclick="decrement('dome', 0.1)" class="retro-button">-</button>
-                  <div id="dome-display" class="value">-9.5</div>
+                  <input type="number" id="dome-display" class="value-input" value="-9.5" onchange="handleInputChange('dome', this.value)" step="0.1">
                   <button onclick="increment('dome', 0.1)" class="retro-button">+</button>
                 </div>
               </div>
@@ -182,7 +194,7 @@
                 <div class="label">COMP HEIGHT (mm)</div>
                 <div class="custom-number mt-3">
                   <button onclick="decrement('compHeight', 0.1)" class="retro-button">-</button>
-                  <div id="compHeight-display" class="value">30.5</div>
+                  <input type="number" id="compHeight-display" class="value-input" value="30.5" onchange="handleInputChange('compHeight', this.value)" step="0.1" min="0">
                   <button onclick="increment('compHeight', 0.1)" class="retro-button">+</button>
                 </div>
               </div>
@@ -192,12 +204,12 @@
         </div>
 
         <!-- Head Gasket -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
 
           <!-- HEAD GASKET (half width, Bore Diff now stacked below Thickness) -->
-          <div class="panel rounded-none p-6">
+          <div class="panel rounded-none p-4 md:p-6">
             <div class="label">HEAD GASKET</div>
-            <select id="gasket" onchange="autoFill()" class="w-full mt-3 text-base md:text-base">
+            <select id="gasket" onchange="autoFill()" class="w-full mt-3 text-sm md:text-base">
               <option value="">HEAD GASKET</option>
               <option value="D15B7-D16A6">D15B7 - D16A6</option>
               <option value="D16Y8-D16Z6">D16Y8 - D16Z6</option>
@@ -205,12 +217,12 @@
               <option value="D17A2">D17A2</option>
               <option value="Other">OTHER</option>
             </select>
-            <div class="mt-6 space-y-6">
+            <div class="mt-4 md:mt-6 space-y-4 md:space-y-6">
               <div>
                 <div class="label">THICKNESS (in)</div>
                 <div class="custom-number mt-3">
                   <button onclick="decrement('gasketThick', 0.001)" class="retro-button">-</button>
-                  <div id="gasketThick-display" class="value">0.027</div>
+                  <input type="number" id="gasketThick-display" class="value-input" value="0.027" onchange="handleInputChange('gasketThick', this.value)" step="0.001" min="0">
                   <button onclick="increment('gasketThick', 0.001)" class="retro-button">+</button>
                 </div>
               </div>
@@ -218,7 +230,7 @@
                 <div class="label">BORE DIFF (mm)</div>
                 <div class="custom-number mt-3">
                   <button onclick="decrement('gasketBoreDiff', 0.1)" class="retro-button">-</button>
-                  <div id="gasketBoreDiff-display" class="value">1</div>
+                  <input type="number" id="gasketBoreDiff-display" class="value-input" value="1" onchange="handleInputChange('gasketBoreDiff', this.value)" step="0.1" min="0">
                   <button onclick="increment('gasketBoreDiff', 0.1)" class="retro-button">+</button>
                 </div>
               </div>
@@ -226,13 +238,13 @@
           </div>
 
           <!-- ADVANCED TUNING (half width, Elevation at very bottom) -->
-          <div class="panel rounded-none p-6">
+          <div class="panel rounded-none p-4 md:p-6">
             <div class="label mb-4">ADVANCED TUNING</div>
               <div class="mb-4">
                 <div class="label">MAX RPM</div>
                 <div class="custom-number mt-3">
                   <button onclick="decrement('rpm', 100)" class="retro-button">-</button>
-                  <div id="rpm-display" class="value">7200</div>
+                  <input type="number" id="rpm-display" class="value-input" value="7200" onchange="handleInputChange('rpm', this.value)" step="100" min="0">
                   <button onclick="increment('rpm', 100)" class="retro-button">+</button>
                 </div>
               </div>
@@ -240,7 +252,7 @@
                 <div class="label">BOOST (PSI)</div>
                 <div class="custom-number mt-3">
                   <button onclick="decrement('boost', 0.1)" class="retro-button">-</button>
-                  <div id="boost-display" class="value">0</div>
+                  <input type="number" id="boost-display" class="value-input" value="0" onchange="handleInputChange('boost', this.value)" step="0.1" min="0">
                   <button onclick="increment('boost', 0.1)" class="retro-button">+</button>
                 </div>
               </div>
@@ -248,7 +260,7 @@
                 <div class="label">ELEVATION (FT)</div>
                 <div class="custom-number mt-3">
                   <button onclick="decrement('elevation', 500)" class="retro-button">-</button>
-                  <div id="elevation-display" class="value">0</div>
+                  <input type="number" id="elevation-display" class="value-input" value="0" onchange="handleInputChange('elevation', this.value)" step="500" min="0">
                   <button onclick="increment('elevation', 500)" class="retro-button">+</button>
                 </div>
               </div>
@@ -257,7 +269,30 @@
       </div>
     </div>
 
-    <div class="text-center text-[#00ffcc] text-[10px] mt-12 tracking-widest">
+    <!-- Mobile Sticky Results Bar -->
+    <div id="mobile-sticky-results" class="lg:hidden fixed bottom-0 left-0 w-full bg-[#001a33] border-t-4 border-[#00ffcc] p-4 flex justify-between items-center z-40 shadow-[0_-10px_20px_rgba(0,0,0,0.5)] cursor-pointer" onclick="document.getElementById('mobile-details-modal').classList.remove('hidden')">
+        <div>
+            <div class="text-[#00ffcc] text-[10px] tracking-widest mb-1">STATIC CR</div>
+            <div id="sticky-cr" class="text-2xl font-black text-[#ffcc00]">--:1</div>
+        </div>
+        <div>
+            <div class="text-[#00ffcc] text-[10px] tracking-widest mb-1 text-right">DISPLACEMENT</div>
+            <div id="sticky-disp" class="text-xl font-black text-[#ffffff] text-right">-- cc</div>
+        </div>
+        <div class="text-[#00ffcc] ml-2 text-xs opacity-70">Tap for<br>Details</div>
+    </div>
+
+    <!-- Mobile Details Modal (Hidden by default) -->
+    <!-- Increased max-width, changed positioning to better center it and use more screen space -->
+    <div id="mobile-details-modal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onclick="if(event.target === this) this.classList.add('hidden')">
+        <div class="result-box w-full max-w-lg p-6 relative" onclick="event.stopPropagation()">
+            <button class="absolute top-2 right-2 text-[#00ffcc] text-xl p-2 font-black" onclick="document.getElementById('mobile-details-modal').classList.add('hidden')">X</button>
+            <div id="mobile-results-content"></div>
+        </div>
+    </div>
+
+
+    <div class="text-center text-[#00ffcc] text-[10px] mt-12 tracking-widest pb-8 lg:pb-0">
       ZEAL AUTOWERKS • 2026 • HONDA D-SERIES COMPRESSION CALCULATOR
     </div>
   </div>
